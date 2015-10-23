@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<package>
+  <name>rviz_tools_py</name>
+  <version>0.1.0</version>
+  <description>Rviz Tools for python</description>
+  <maintainer email="dbworth@cmu.edu">David Butterworth</maintainer>
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>geometry_msgs</build_depend>
+  <build_depend>rospy</build_depend>
+  <build_depend>visualization_msgs</build_depend>
+  <build_depend>tf</build_depend>
+  <build_depend>rospkg</build_depend>
+
+  <run_depend>geometry_msgs</run_depend>
+  <run_depend>rospy</run_depend>
+  <run_depend>visualization_msgs</run_depend>
+  <run_depend>tf</run_depend>
+  <run_depend>rospkg</run_depend>
+
+</package>
