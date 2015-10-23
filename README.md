@@ -6,6 +6,8 @@ Currently this package contains some functions that make it easy to publish Rviz
 Python code by David Butterworth.  
 Based on Dave Coleman's C++ library [RvizVisualTools](https://github.com/davetcoleman/rviz_visual_tools)
 
+This package been tested on Ubuntu 14.04 with ROS Indigo.
+
 
 **Usage examples:**
 
@@ -24,6 +26,7 @@ cube_width = 0.5
 markers.publishCube(T, rgb_color, cube_width)
 ```
 
+
 **Demo:**
 
 To run the example code:  
@@ -31,5 +34,4 @@ To run the example code:
 $ rosrun rviz_tools_py demo.py
 ```
 
-This has been tested on Ubuntu 14.04 with ROS Indigo.
-
+![Demo markers](https://raw.github.com/DavidB-CMU/rviz_tools_py/master/demo_markers1.png)
