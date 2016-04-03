@@ -292,9 +292,17 @@ class RvizMarkers(object):
         result.a = self.alpha
 
         if (type(color) == tuple) or (type(color) == list):
-            result.r = color[0]
-            result.g = color[1]
-            result.b = color[2]
+            if len(color) == 3:
+                result.r = color[0]
+                result.g = color[1]
+                result.b = color[2]
+            elif len(color) == 4:
+                result.r = color[0]
+                result.g = color[1]
+                result.b = color[2]
+                result.a = color[3]
+            else:
+                raise ValueError('color must have 3 or 4 float values in getColor()')
         elif (color == 'red'):
             result.r = 0.8
             result.g = 0.1
