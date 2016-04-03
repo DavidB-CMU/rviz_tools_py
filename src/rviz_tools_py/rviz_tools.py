@@ -52,7 +52,7 @@ class RvizMarkers(object):
     A class for publishing markers in Rviz
     """
 
-    def __init__(self, base_frame, marker_topic):
+    def __init__(self, base_frame, marker_topic, wait_time=None):
         self.base_frame = base_frame
         self.marker_topic = marker_topic
 
@@ -60,8 +60,8 @@ class RvizMarkers(object):
         self.setDefaultMarkerParams()
 
         # Create the Rviz Marker Publisher
-        self.loadMarkerPublisher()
-    
+        self.loadMarkerPublisher(wait_time)
+
 
     def setDefaultMarkerParams(self):
         """
@@ -209,9 +209,12 @@ class RvizMarkers(object):
         self.text_marker.lifetime = self.marker_lifetime
 
 
-    def loadMarkerPublisher(self):
+    def loadMarkerPublisher(self, wait_time=None):
         """
-        Initialize the ROS Publisher
+        Initialize the ROS Publisher.
+
+        If wait_time != None, wait for specified number of
+        seconds for a subscriber to connect.
         """
 
         # Check if the ROS Publisher has already been created
@@ -222,32 +225,34 @@ class RvizMarkers(object):
         self.pub_rviz_marker = rospy.Publisher(self.marker_topic, Marker, queue_size=10)
         rospy.logdebug("Publishing Rviz markers on topic '%s'", self.marker_topic)
 
-        ## Block until there is 1 subscriber, or 3 seconds
-        #self.waitForSubscriber(self.pub_rviz_marker, 3.0)
+        # Block for specified number of seconds,
+        # or until there is 1 subscriber
+        if wait_time != None:
+            self.waitForSubscriber(self.pub_rviz_marker, wait_time)
 
 
-    #def waitForSubscriber(self, publisher, wait_time=1.0):
-    #    """
-    #    Wait until there is 1 subscriber to a ROS Publisher,
-    #    or until some number of seconds have elapsed.
-    #    """
-    #
-    #    start_time = rospy.Time.now()
-    #    max_time = start_time + rospy.Duration(wait_time)
-    #
-    #    num_existing_subscribers = publisher.get_num_connections()
-    #
-    #    while (num_existing_subscribers == 0):
-    #        #print 'Number of subscribers: ', num_existing_subscribers
-    #        rospy.Rate(100).sleep()
-    #
-    #        if (rospy.Time.now() > max_time):
-    #            rospy.logerr("No subscribers connected to the '%s' topic after %f seconds", self.marker_topic, wait_time)
-    #            return False
-    #
-    #        num_existing_subscribers = publisher.get_num_connections()
-    #
-    #    return True
+    def waitForSubscriber(self, publisher, wait_time=1.0):
+        """
+        Wait until there is 1 subscriber to a ROS Publisher,
+        or until some number of seconds have elapsed.
+        """
+
+        start_time = rospy.Time.now()
+        max_time = start_time + rospy.Duration(wait_time)
+
+        num_existing_subscribers = publisher.get_num_connections()
+
+        while (num_existing_subscribers == 0):
+            #print 'Number of subscribers: ', num_existing_subscribers
+            rospy.Rate(100).sleep()
+
+            if (rospy.Time.now() > max_time):
+                rospy.logerr("No subscribers connected to the '%s' topic after %f seconds", self.marker_topic, wait_time)
+                return False
+
+            num_existing_subscribers = publisher.get_num_connections()
+
+        return True
 
 
     def publishMarker(self, marker):
