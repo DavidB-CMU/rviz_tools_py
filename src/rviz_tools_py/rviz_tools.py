@@ -184,6 +184,21 @@ class RvizMarkers(object):
         self.cube_marker.type = Marker().CUBE
         self.cube_marker.lifetime = self.marker_lifetime
 
+        # Cubes List (Multiple cubes)
+        self.cubes_marker = Marker()
+        self.cubes_marker.header.frame_id = self.base_frame
+        self.cubes_marker.ns = "Cubes" # unique ID
+        self.cubes_marker.type = Marker().CUBE_LIST
+        self.cubes_marker.action = Marker().ADD
+        self.cubes_marker.lifetime = self.marker_lifetime
+        self.cubes_marker.pose.position.x = 0.0
+        self.cubes_marker.pose.position.y = 0.0
+        self.cubes_marker.pose.position.z = 0.0
+        self.cubes_marker.pose.orientation.x = 0.0
+        self.cubes_marker.pose.orientation.y = 0.0
+        self.cubes_marker.pose.orientation.z = 0.0
+        self.cubes_marker.pose.orientation.w = 1.0
+
         # Cylinder Marker
         self.cylinder_marker = Marker()
         self.cylinder_marker.header.frame_id = self.base_frame
@@ -651,6 +666,78 @@ class RvizMarkers(object):
         cube_marker.color = self.getColor(color)
 
         return self.publishMarker(cube_marker)
+
+
+    def publishCubes(self, list_of_cubes, color, scale, lifetime=None):
+        """
+        Publish a list of cubes.
+
+        @param list_of_cubes (list of numpy matrix, list of numpy ndarray, list of ROS Pose)
+        @param color name (string) or RGB color value (tuple or list)
+        @param scale (ROS Vector3, float)
+        @param lifetime (float, None = never expire)
+        """
+
+        if (self.muted == True):
+            return True
+
+        # Check input
+        if type(list_of_cubes) != list:
+            rospy.logerr("list_of_cubes is unsupported type '%s' in publishCubes()", type(list_of_cubes).__name__)
+            return False
+
+        # Convert input scale to a ROS Vector3 Msg
+        if type(scale) == Vector3:
+            cubes_scale = scale
+        elif type(scale) == float:
+            cubes_scale = Vector3(scale, scale, scale)
+        else:
+            rospy.logerr("Scale is unsupported type '%s' in publishCubes()", type(scale).__name__)
+            return False
+
+        # Increment the ID number
+        self.cubes_marker.id += 1
+
+        # Get the default parameters
+        cubes_marker = self.cubes_marker
+
+        if lifetime == None:
+            cubes_marker.lifetime = rospy.Duration(0.0) # 0 = Marker never expires
+        else:
+            cubes_marker.lifetime = rospy.Duration(lifetime) # in seconds
+
+        # Set the timestamp
+        cubes_marker.header.stamp = rospy.Time.now()
+
+        # Set marker size
+        cubes_marker.scale = cubes_scale
+
+        # Set marker color
+        cubes_marker.color = self.getColor(color)
+
+        cubes_color = self.getColor(color)
+
+        # Set the cubes positions and color
+        cubes_marker.points[:] = [] # clear
+        cubes_marker.colors[:] = []
+        for i in range(0, len(list_of_cubes)):
+
+            # Each cube position needs to be a ROS Point Msg
+            if type(list_of_cubes[i]) == Pose:
+                cubes_marker.points.append(list_of_cubes[i].position)
+                cubes_marker.colors.append(cubes_color)
+            elif (type(list_of_cubes[i]) == numpy.matrix) or (type(list_of_cubes[i]) == numpy.ndarray):
+                pose_i = mat_to_pose(list_of_cubes[i])
+                cubes_marker.points.append(pose_i.position)
+                cubes_marker.colors.append(cubes_color)
+            elif type(list_of_cubes[i]) == Point:
+                cubes_marker.points.append(list_of_cubes[i])
+                cubes_marker.colors.append(cubes_color)
+            else:
+                rospy.logerr("list_of_cubes contains unsupported type '%s' in publishCubes()", type(list_of_cubes[i]).__name__)
+                return False
+
+        return self.publishMarker(cubes_marker)
 
 
     def publishBlock(self, pose, color, scale, lifetime=None):

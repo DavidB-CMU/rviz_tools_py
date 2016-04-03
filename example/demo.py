@@ -197,6 +197,25 @@ while not rospy.is_shutdown():
     markers.publishCube(P, 'brown', scale, 5.0) # pose, color, scale, lifetime
 
 
+    # List of cubes:
+
+    # Publish a set of cubes using a list of ROS Point Msgs
+    points = []
+    z_height = 0.1
+    points.append(Point(3.5+0*0.2, 0.5, z_height)) # row 1
+    points.append(Point(3.5+1*0.2, 0.5, z_height))
+    points.append(Point(3.5+2*0.2, 0.5, z_height))
+    points.append(Point(3.5+0*0.2, 0.5+1*0.2, z_height)) # row 2
+    points.append(Point(3.5+1*0.2, 0.5+1*0.2, z_height))
+    points.append(Point(3.5+2*0.2, 0.5+1*0.2, z_height))
+    points.append(Point(3.5+0*0.2, 0.5+2*0.2, z_height)) # row 3
+    points.append(Point(3.5+1*0.2, 0.5+2*0.2, z_height))
+    points.append(Point(3.5+2*0.2, 0.5+2*0.2, z_height))
+    points.append(Point(3.5+0*0.2, 0.5+2*0.2, z_height+0.2)) # 2nd layer
+    diameter = 0.2-0.005
+    markers.publishCubes(points, 'red', diameter, 5.0) # path, color, diameter, lifetime
+
+
     # Sphere:
 
     # Publish a sphere using a numpy transform matrix
