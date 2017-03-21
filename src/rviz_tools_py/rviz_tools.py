@@ -400,7 +400,7 @@ class RvizMarkers(object):
             result.g = 0.1
             result.b = 0.8
 
-        return result 
+        return result
 
 
     def getRandomColor(self):
@@ -794,8 +794,8 @@ class RvizMarkers(object):
         cylinder_marker.pose = cylinder_pose
 
         # Set marker size
-        cylinder_marker.scale.x = radius
-        cylinder_marker.scale.y = radius
+        cylinder_marker.scale.x = radius * 2
+        cylinder_marker.scale.y = radius * 2
         cylinder_marker.scale.z = height
 
         # Set marker color
@@ -1161,7 +1161,7 @@ class RvizMarkers(object):
                 position = pose.position
                 point = Point(position.x, position.y, position.z)
                 path_marker.points.append(point)
-                path_marker.colors.append(path_color)           
+                path_marker.colors.append(path_color)
             else:
                 rospy.logerr("path list contains unsupported type '%s' in publishPath()", type(path[i]).__name__)
                 return False
@@ -1265,7 +1265,7 @@ class RvizMarkers(object):
 
             # Each sphere position needs to be a ROS Point Msg
             if type(list_of_spheres[i]) == Pose:
-                spheres_marker.points.append( list_of_spheres[i].position ) 
+                spheres_marker.points.append( list_of_spheres[i].position )
                 spheres_marker.colors.append(spheres_color)
             elif (type(list_of_spheres[i]) == numpy.matrix) or (type(list_of_spheres[i]) == numpy.ndarray):
                 pose_i = mat_to_pose(list_of_spheres[i])
@@ -1340,7 +1340,7 @@ class RvizMarkers(object):
 
         return self.publishMarker(text_marker)
 
- 
+
 #------------------------------------------------------------------------------#
 
 
