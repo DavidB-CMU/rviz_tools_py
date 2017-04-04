@@ -750,7 +750,7 @@ class RvizMarkers(object):
         @param lifetime (float, None = never expire)
         """
 
-        return self.publishCube(pose, color, scale)
+        return self.publishCube(ns,pose, color, scale)
 
 
     def publishCylinder(self, ns, pose, color, height, radius, lifetime=None):
@@ -827,19 +827,19 @@ class RvizMarkers(object):
         r = tf.transformations.rotation_matrix(numpy.pi/2.0, (0,1,0))
         m = tf.transformations.concatenate_matrices(axis_pose, t, r)
         x_pose = mat_to_pose(m)
-        self.publishCylinder(x_pose, 'red', length, radius, lifetime)
+        self.publishCylinder(ns,x_pose, 'red', length, radius, lifetime)
 
         t = tf.transformations.translation_matrix( (0.0, length/2.0, 0.0) )
         r = tf.transformations.rotation_matrix(numpy.pi/2.0, (1,0,0))
         m = tf.transformations.concatenate_matrices(axis_pose, t, r)
         y_pose = mat_to_pose(m)
-        self.publishCylinder(y_pose, 'green', length, radius, lifetime)
+        self.publishCylinder(ns,y_pose, 'green', length, radius, lifetime)
 
         t = tf.transformations.translation_matrix( (0.0, 0.0, length/2.0) )
         r = tf.transformations.rotation_matrix(0.0, (0,0,1))
         m = tf.transformations.concatenate_matrices(axis_pose, t, r)
         z_pose = mat_to_pose(m)
-        self.publishCylinder(z_pose, 'blue', length, radius, lifetime)
+        self.publishCylinder(ns,z_pose, 'blue', length, radius, lifetime)
 
         return True
 
@@ -1205,7 +1205,7 @@ class RvizMarkers(object):
         z = polygon_msg.points[0].z
         polygon_path.append( Point(x,y,z) )
 
-        return self.publishPath(polygon_path, color, width, lifetime)
+        return self.publishPath(ns,polygon_path, color, width, lifetime)
 
 
     def publishSpheres(self, ns, list_of_spheres, color, scale, lifetime=None):
