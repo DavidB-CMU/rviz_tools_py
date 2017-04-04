@@ -290,8 +290,8 @@ class RvizMarkers(object):
         """
         Publish a Msg to delete all Markers
         """
-
-        return self.publishMarker(ns, self.reset_marker)
+        pass
+        # return self.publishMarker(ns, self.reset_marker)
 
 
     def getColor(self, color):
