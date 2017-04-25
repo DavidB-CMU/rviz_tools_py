@@ -270,7 +270,7 @@ class RvizMarkers(object):
         return True
 
 
-    def publishMarker(self, marker):
+    def publishMarker(self, ns, marker):
         """
         Publish a Marker Msg
         """
@@ -280,7 +280,7 @@ class RvizMarkers(object):
 
         ## Check ROS Publisher
         #self.loadMarkerPublisher()
-
+        marker.ns = ns;
         self.pub_rviz_marker.publish(marker)
 
         return True
@@ -290,8 +290,8 @@ class RvizMarkers(object):
         """
         Publish a Msg to delete all Markers
         """
-
-        return self.publishMarker(self.reset_marker)
+        pass
+        # return self.publishMarker(ns, self.reset_marker)
 
 
     def getColor(self, color):
@@ -400,7 +400,7 @@ class RvizMarkers(object):
             result.g = 0.1
             result.b = 0.8
 
-        return result 
+        return result
 
 
     def getRandomColor(self):
@@ -431,7 +431,7 @@ class RvizMarkers(object):
         return rand_color_name
 
 
-    def publishSphere(self, pose, color, scale, lifetime=None):
+    def publishSphere(self, ns, pose, color, scale, lifetime=None):
         """
         Publish a sphere Marker. This renders 3D looking sphere.
 
@@ -467,7 +467,7 @@ class RvizMarkers(object):
             return False
 
         # Increment the ID number
-        self.sphere_marker.id += 1
+        #self.sphere_marker.id += 1
 
         # Get the default parameters
         sphere_marker = self.sphere_marker
@@ -489,10 +489,10 @@ class RvizMarkers(object):
         # Set the pose
         sphere_marker.pose = sphere_pose
 
-        return self.publishMarker(sphere_marker)
+        return self.publishMarker(ns, sphere_marker)
 
 
-    def publishSphere2(self, pose, color, scale, lifetime=None):
+    def publishSphere2(self, ns, pose, color, scale, lifetime=None):
         """
         Publish a sphere Marker. This renders a smoother, flatter-looking sphere.
 
@@ -528,7 +528,7 @@ class RvizMarkers(object):
             return False
 
         # Increment the ID number
-        self.sphere_marker.id += 1
+        #self.sphere_marker.id += 1
 
         # Get the default parameters
         sphere_marker = self.sphere_marker2 # sphere_marker2 = SPHERE_LIST
@@ -551,10 +551,10 @@ class RvizMarkers(object):
         sphere_marker.points[0] = sphere_pose.position
         sphere_marker.colors[0] = self.getColor(color)
 
-        return self.publishMarker(sphere_marker)
+        return self.publishMarker(ns, sphere_marker)
 
 
-    def publishArrow(self, pose, color, scale, lifetime=None):
+    def publishArrow(self, ns, pose, color, scale, lifetime=None):
         """
         Publish an arrow Marker.
 
@@ -586,7 +586,7 @@ class RvizMarkers(object):
             return False
 
         # Increment the ID number
-        self.arrow_marker.id += 1
+        #self.arrow_marker.id += 1
 
         # Get the default parameters
         arrow_marker = self.arrow_marker
@@ -608,10 +608,10 @@ class RvizMarkers(object):
         # Set marker color
         arrow_marker.color = self.getColor(color)
 
-        return self.publishMarker(arrow_marker)
+        return self.publishMarker(ns, arrow_marker)
 
 
-    def publishCube(self, pose, color, scale, lifetime=None):
+    def publishCube(self, ns, pose, color, scale, lifetime=None):
         """
         Publish a cube Marker.
 
@@ -643,7 +643,7 @@ class RvizMarkers(object):
             return False
 
         # Increment the ID number
-        self.cube_marker.id += 1
+        #self.cube_marker.id += 1
 
         # Get the default parameters
         cube_marker = self.cube_marker
@@ -665,10 +665,10 @@ class RvizMarkers(object):
         # Set marker color
         cube_marker.color = self.getColor(color)
 
-        return self.publishMarker(cube_marker)
+        return self.publishMarker(ns, cube_marker)
 
 
-    def publishCubes(self, list_of_cubes, color, scale, lifetime=None):
+    def publishCubes(self, ns, list_of_cubes, list_of_colors, scale, lifetime=None):
         """
         Publish a list of cubes.
 
@@ -696,7 +696,7 @@ class RvizMarkers(object):
             return False
 
         # Increment the ID number
-        self.cubes_marker.id += 1
+        #self.cubes_marker.id += 1
 
         # Get the default parameters
         cubes_marker = self.cubes_marker
@@ -713,34 +713,37 @@ class RvizMarkers(object):
         cubes_marker.scale = cubes_scale
 
         # Set marker color
-        cubes_marker.color = self.getColor(color)
+        # cubes_marker.color = self.getColor(color)
 
-        cubes_color = self.getColor(color)
+        # cubes_color = self.getColor(color)
 
         # Set the cubes positions and color
         cubes_marker.points[:] = [] # clear
         cubes_marker.colors[:] = []
-        for i in range(0, len(list_of_cubes)):
 
+        assert(len(list_of_cubes) == len(list_of_colors))
+
+        for i in range(0, len(list_of_cubes)):
+            color = self.getColor(list_of_colors[i])
             # Each cube position needs to be a ROS Point Msg
             if type(list_of_cubes[i]) == Pose:
                 cubes_marker.points.append(list_of_cubes[i].position)
-                cubes_marker.colors.append(cubes_color)
+                cubes_marker.colors.append(color)
             elif (type(list_of_cubes[i]) == numpy.matrix) or (type(list_of_cubes[i]) == numpy.ndarray):
                 pose_i = mat_to_pose(list_of_cubes[i])
                 cubes_marker.points.append(pose_i.position)
-                cubes_marker.colors.append(cubes_color)
+                cubes_marker.colors.append(color)
             elif type(list_of_cubes[i]) == Point:
                 cubes_marker.points.append(list_of_cubes[i])
-                cubes_marker.colors.append(cubes_color)
+                cubes_marker.colors.append(color)
             else:
                 rospy.logerr("list_of_cubes contains unsupported type '%s' in publishCubes()", type(list_of_cubes[i]).__name__)
                 return False
 
-        return self.publishMarker(cubes_marker)
+        return self.publishMarker(ns, cubes_marker)
 
 
-    def publishBlock(self, pose, color, scale, lifetime=None):
+    def publishBlock(self, ns, pose, color, scale, lifetime=None):
         """
         Publish a cube Marker.
 
@@ -753,7 +756,7 @@ class RvizMarkers(object):
         return self.publishCube(pose, color, scale)
 
 
-    def publishCylinder(self, pose, color, height, radius, lifetime=None):
+    def publishCylinder(self, ns, pose, color, height, radius, lifetime=None):
         """
         Publish a cylinder Marker.
 
@@ -777,7 +780,7 @@ class RvizMarkers(object):
             return False
 
         # Increment the ID number
-        self.cylinder_marker.id += 1
+        #self.cylinder_marker.id += 1
 
         # Get the default parameters
         cylinder_marker = self.cylinder_marker
@@ -794,17 +797,17 @@ class RvizMarkers(object):
         cylinder_marker.pose = cylinder_pose
 
         # Set marker size
-        cylinder_marker.scale.x = radius
-        cylinder_marker.scale.y = radius
+        cylinder_marker.scale.x = radius * 2
+        cylinder_marker.scale.y = radius * 2
         cylinder_marker.scale.z = height
 
         # Set marker color
         cylinder_marker.color = self.getColor(color)
 
-        return self.publishMarker(cylinder_marker)
+        return self.publishMarker(ns, cylinder_marker)
 
 
-    def publishAxis(self, pose, length, radius, lifetime=None):
+    def publishAxis(self, ns, pose, length, radius, lifetime=None):
         """
         Publish an axis Marker.
 
@@ -827,24 +830,24 @@ class RvizMarkers(object):
         r = tf.transformations.rotation_matrix(numpy.pi/2.0, (0,1,0))
         m = tf.transformations.concatenate_matrices(axis_pose, t, r)
         x_pose = mat_to_pose(m)
-        self.publishCylinder(x_pose, 'red', length, radius, lifetime)
+        self.publishCylinder(ns,x_pose, 'red', length, radius, lifetime)
 
         t = tf.transformations.translation_matrix( (0.0, length/2.0, 0.0) )
         r = tf.transformations.rotation_matrix(numpy.pi/2.0, (1,0,0))
         m = tf.transformations.concatenate_matrices(axis_pose, t, r)
         y_pose = mat_to_pose(m)
-        self.publishCylinder(y_pose, 'green', length, radius, lifetime)
+        self.publishCylinder(ns,y_pose, 'green', length, radius, lifetime)
 
         t = tf.transformations.translation_matrix( (0.0, 0.0, length/2.0) )
         r = tf.transformations.rotation_matrix(0.0, (0,0,1))
         m = tf.transformations.concatenate_matrices(axis_pose, t, r)
         z_pose = mat_to_pose(m)
-        self.publishCylinder(z_pose, 'blue', length, radius, lifetime)
+        self.publishCylinder(ns,z_pose, 'blue', length, radius, lifetime)
 
         return True
 
 
-    def publishMesh(self, pose, file_name, color, scale, lifetime=None):
+    def publishMesh(self, ns, pose, file_name, color, scale, lifetime=None):
         """
         Publish a mesh Marker. The mesh file can be a binary STL or collada DAE file.
 
@@ -877,7 +880,7 @@ class RvizMarkers(object):
             return False
 
         # Increment the ID number
-        self.mesh_marker.id += 1
+        #self.mesh_marker.id += 1
 
         # Get the default parameters
         mesh_marker = self.mesh_marker
@@ -906,10 +909,10 @@ class RvizMarkers(object):
         mesh_marker.mesh_resource = file_name
         mesh_marker.mesh_use_embedded_materials = True
 
-        return self.publishMarker(mesh_marker)
+        return self.publishMarker(ns, mesh_marker)
 
 
-    def publishRectangle(self, point1, point2, color, lifetime=None):
+    def publishRectangle(self, ns, point1, point2, color, lifetime=None):
         """
         Publish a rectangle Marker between two points. If the z-values are not the same then this will result in a cuboid.
 
@@ -935,7 +938,7 @@ class RvizMarkers(object):
             return False
 
         # Increment the ID number
-        self.rectangle_marker.id += 1
+        #self.rectangle_marker.id += 1
 
         # Get the default parameters
         rectangle_marker = self.rectangle_marker
@@ -963,10 +966,10 @@ class RvizMarkers(object):
         rectangle_marker.scale.y = numpy.fabs(rect_point1.y - rect_point2.y)
         rectangle_marker.scale.z = numpy.fabs(rect_point1.z - rect_point2.z)
 
-        return self.publishMarker(rectangle_marker)
+        return self.publishMarker(ns, rectangle_marker)
 
 
-    def publishPlane(self, pose, depth, width, color, lifetime=None):
+    def publishPlane(self, ns, pose, depth, width, color, lifetime=None):
         """
         Publish a plane Marker.
 
@@ -990,7 +993,7 @@ class RvizMarkers(object):
             return False
 
         # Increment the ID number
-        self.rectangle_marker.id += 1
+        #self.rectangle_marker.id += 1
 
         # Get the default parameters
         rectangle_marker = self.rectangle_marker
@@ -1014,10 +1017,10 @@ class RvizMarkers(object):
         rectangle_marker.scale.y = width
         rectangle_marker.scale.z = 0.0
 
-        return self.publishMarker(rectangle_marker)
+        return self.publishMarker(ns, rectangle_marker)
 
 
-    def publishLine(self, point1, point2, color, width, lifetime=None):
+    def publishLine(self, ns, point1, point2, color, width, lifetime=None):
         """
         Publish a line Marker between two points.
 
@@ -1059,7 +1062,7 @@ class RvizMarkers(object):
             return False
 
         # Increment the ID number
-        self.line_marker.id += 1
+        #self.line_marker.id += 1
 
         # Get the default parameters
         line_marker = self.line_marker
@@ -1083,10 +1086,10 @@ class RvizMarkers(object):
         # Set the line width
         line_marker.scale.x = width
 
-        return self.publishMarker(line_marker)
+        return self.publishMarker(ns, line_marker)
 
 
-    def publishPath(self, path, color, width, lifetime=None):
+    def publishPath(self, ns, path, color, width, lifetime=None):
         """
         Publish a path Marker using a set of waypoints.
 
@@ -1107,7 +1110,7 @@ class RvizMarkers(object):
             return False
 
         # Increment the ID number
-        self.path_marker.id += 1
+        #self.path_marker.id += 1
 
         # Get the default parameters
         path_marker = self.path_marker
@@ -1161,15 +1164,15 @@ class RvizMarkers(object):
                 position = pose.position
                 point = Point(position.x, position.y, position.z)
                 path_marker.points.append(point)
-                path_marker.colors.append(path_color)           
+                path_marker.colors.append(path_color)
             else:
                 rospy.logerr("path list contains unsupported type '%s' in publishPath()", type(path[i]).__name__)
                 return False
 
-        return self.publishMarker(path_marker)
+        return self.publishMarker(ns, path_marker)
 
 
-    def publishPolygon(self, polygon, color, width, lifetime=None):
+    def publishPolygon(self, ns, polygon, color, width, lifetime=None):
         """
         Publish a polygon Marker.
 
@@ -1205,10 +1208,10 @@ class RvizMarkers(object):
         z = polygon_msg.points[0].z
         polygon_path.append( Point(x,y,z) )
 
-        return self.publishPath(polygon_path, color, width, lifetime)
+        return self.publishPath(ns,polygon_path, color, width, lifetime)
 
 
-    def publishSpheres(self, list_of_spheres, color, scale, lifetime=None):
+    def publishSpheres(self, ns, list_of_spheres, color, scale, lifetime=None):
         """
         Publish a list of spheres. This renders smoother, flatter-looking spheres.
 
@@ -1236,7 +1239,7 @@ class RvizMarkers(object):
             return False
 
         # Increment the ID number
-        self.spheres_marker.id += 1
+        #self.spheres_marker.id += 1
 
         # Get the default parameters
         spheres_marker = self.spheres_marker
@@ -1265,7 +1268,7 @@ class RvizMarkers(object):
 
             # Each sphere position needs to be a ROS Point Msg
             if type(list_of_spheres[i]) == Pose:
-                spheres_marker.points.append( list_of_spheres[i].position ) 
+                spheres_marker.points.append( list_of_spheres[i].position )
                 spheres_marker.colors.append(spheres_color)
             elif (type(list_of_spheres[i]) == numpy.matrix) or (type(list_of_spheres[i]) == numpy.ndarray):
                 pose_i = mat_to_pose(list_of_spheres[i])
@@ -1278,10 +1281,10 @@ class RvizMarkers(object):
                 rospy.logerr("list_of_sphere contains unsupported type '%s' in publishSphere()", type(list_of_spheres[i]).__name__)
                 return False
 
-        return self.publishMarker(spheres_marker)
+        return self.publishMarker(ns, spheres_marker)
 
 
-    def publishText(self, pose, text, color, scale, lifetime=None):
+    def publishText(self, ns, pose, text, color, scale, lifetime=None):
         """
         Publish a text Marker
 
@@ -1314,7 +1317,7 @@ class RvizMarkers(object):
             return False
 
         # Increment the ID number
-        self.text_marker.id += 1
+        #self.text_marker.id += 1
 
         # Get the default parameters
         text_marker = self.text_marker
@@ -1338,9 +1341,9 @@ class RvizMarkers(object):
 
         text_marker.text = text
 
-        return self.publishMarker(text_marker)
+        return self.publishMarker(ns, text_marker)
 
- 
+
 #------------------------------------------------------------------------------#
 
 
