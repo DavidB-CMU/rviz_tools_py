@@ -668,7 +668,7 @@ class RvizMarkers(object):
         return self.publishMarker(ns, cube_marker)
 
 
-    def publishCubes(self, ns, list_of_cubes, color, scale, lifetime=None):
+    def publishCubes(self, ns, list_of_cubes, list_of_colors, scale, lifetime=None):
         """
         Publish a list of cubes.
 
@@ -713,26 +713,29 @@ class RvizMarkers(object):
         cubes_marker.scale = cubes_scale
 
         # Set marker color
-        cubes_marker.color = self.getColor(color)
+        # cubes_marker.color = self.getColor(color)
 
-        cubes_color = self.getColor(color)
+        # cubes_color = self.getColor(color)
 
         # Set the cubes positions and color
         cubes_marker.points[:] = [] # clear
         cubes_marker.colors[:] = []
-        for i in range(0, len(list_of_cubes)):
 
+        assert(len(list_of_cubes) == len(list_of_colors))
+
+        for i in range(0, len(list_of_cubes)):
+            color = self.getColor(list_of_colors[i])
             # Each cube position needs to be a ROS Point Msg
             if type(list_of_cubes[i]) == Pose:
                 cubes_marker.points.append(list_of_cubes[i].position)
-                cubes_marker.colors.append(cubes_color)
+                cubes_marker.colors.append(color)
             elif (type(list_of_cubes[i]) == numpy.matrix) or (type(list_of_cubes[i]) == numpy.ndarray):
                 pose_i = mat_to_pose(list_of_cubes[i])
                 cubes_marker.points.append(pose_i.position)
-                cubes_marker.colors.append(cubes_color)
+                cubes_marker.colors.append(color)
             elif type(list_of_cubes[i]) == Point:
                 cubes_marker.points.append(list_of_cubes[i])
-                cubes_marker.colors.append(cubes_color)
+                cubes_marker.colors.append(color)
             else:
                 rospy.logerr("list_of_cubes contains unsupported type '%s' in publishCubes()", type(list_of_cubes[i]).__name__)
                 return False
