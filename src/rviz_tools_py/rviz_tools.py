@@ -300,7 +300,7 @@ class RvizMarkers(object):
         """
         Return a ROS ColorRGBA type from a color name, RGB value or a ROS ColorRGBA value
 
-        @param color name (string) or RGB color value (tuple or list)
+        @param color name (string), RGB color value (tuple or list) or ROS ColorRGBA type
 
         @return color (ColorRGBA)
         """
