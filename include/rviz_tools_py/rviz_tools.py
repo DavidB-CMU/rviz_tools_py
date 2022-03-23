@@ -237,7 +237,7 @@ class RvizMarkers(object):
             return
 
         # Create the Rviz Marker Publisher
-        self.pub_rviz_marker = rospy.Publisher(self.marker_topic, Marker, queue_size=10)
+        self.pub_rviz_marker = rospy.Publisher(self.marker_topic, Marker, latch=True, queue_size=10)
         rospy.logdebug("Publishing Rviz markers on topic '%s'", self.marker_topic)
 
         # Block for specified number of seconds,
@@ -828,12 +828,14 @@ class RvizMarkers(object):
         m = tf.transformations.concatenate_matrices(axis_pose, t, r)
         x_pose = mat_to_pose(m)
         self.publishCylinder(x_pose, 'red', length, radius, lifetime)
+        rospy.sleep(0.2)
 
         t = tf.transformations.translation_matrix( (0.0, length/2.0, 0.0) )
         r = tf.transformations.rotation_matrix(numpy.pi/2.0, (1,0,0))
         m = tf.transformations.concatenate_matrices(axis_pose, t, r)
         y_pose = mat_to_pose(m)
         self.publishCylinder(y_pose, 'green', length, radius, lifetime)
+        rospy.sleep(0.2)
 
         t = tf.transformations.translation_matrix( (0.0, 0.0, length/2.0) )
         r = tf.transformations.rotation_matrix(0.0, (0,0,1))
