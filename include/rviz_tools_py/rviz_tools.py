@@ -804,7 +804,7 @@ class RvizMarkers(object):
         return self.publishMarker(cylinder_marker)
 
 
-    def publishAxis(self, pose, length, radius, lifetime=None):
+    def publishAxis(self, pose, length=0.05, radius=0.01, lifetime=None):
         """
         Publish an axis Marker.
 
@@ -844,6 +844,10 @@ class RvizMarkers(object):
         self.publishCylinder(z_pose, 'blue', length, radius, lifetime)
 
         return True
+
+    def publishAxisArray(self, pose_array, length=0.05, radius=0.01, lifetime=None):
+        for pose in pose_array:
+            self.publishAxis(pose, length, radius, lifetime=lifetime)
 
 
     def publishMesh(self, pose, file_name, color, scale, lifetime=None):
